@@ -8,11 +8,10 @@ use axum::routing::post;
 use reqwest::Client;
 use serde::Deserialize;
 use shuttle_runtime::SecretStore;
-use tower_http::cors::CorsLayer; // ADDED: For CORS
+use tower_http::cors::CorsLayer;
 use tracing::{info, instrument, warn};
 use wp_mini_epub::{download_story_to_memory, login, AppError};
 
-// --- (Structs and constants remain the same) ---
 const CONCURRENT_CHAPTER_REQUESTS: usize = 10;
 
 #[derive(Clone)]
@@ -31,7 +30,6 @@ struct GenerateEpubRequest {
 
 struct MyError(AppError);
 
-// --- (main function is completely refactored) ---
 #[shuttle_runtime::main]
 async fn main(
     #[shuttle_runtime::Secrets] secret_store: SecretStore,
@@ -66,7 +64,7 @@ async fn main(
     let app = Router::new()
         .route("/generate-epub", post(generate_epub))
         .with_state(app_state)
-        .layer(cors); // ADDED: Apply the CORS middleware
+        .layer(cors); // Apply the CORS middleware
 
     // Return the router to Shuttle
     Ok(app.into())
@@ -75,7 +73,6 @@ async fn main(
 
 // handlers, error mapping, and IntoResponse implementation
 fn map_anyhow_error(e: anyhow::Error) -> AppError {
-    // ... (this function is unchanged)
     if let Some(app_error) = e.downcast_ref::<AppError>() {
         return match app_error {
             AppError::AuthenticationFailed => AppError::AuthenticationFailed,
@@ -98,7 +95,6 @@ async fn generate_epub(
     State(state): State<AppState>,
     Json(payload): Json<GenerateEpubRequest>,
 ) -> Result<Response, MyError> {
-    // ... (this function is unchanged)
     let epub_bytes_result = match (payload.username, payload.password) {
         (Some(user), Some(pass)) => {
             info!("Handling authenticated request");
@@ -148,7 +144,6 @@ impl From<AppError> for MyError {
 
 impl IntoResponse for MyError {
     fn into_response(self) -> Response {
-        // ... (this implementation is unchanged)
         let error = self.0;
         let (status, error_message) = match error {
             AppError::AuthenticationFailed => (StatusCode::UNAUTHORIZED, error.to_string()),
