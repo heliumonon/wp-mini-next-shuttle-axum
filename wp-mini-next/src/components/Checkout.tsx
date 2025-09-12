@@ -186,7 +186,7 @@ export const Checkout: React.FC<React.ComponentProps<typeof Column>> = ({ ...fle
           <div className="clear">
             <Row height="48" vertical="center">
               <Button type="submit" id="mc-embedded-checkout" value="Checkout" size="m" fillWidth>
-                Checkout
+                Continue
               </Button>
             </Row>
           </div>
