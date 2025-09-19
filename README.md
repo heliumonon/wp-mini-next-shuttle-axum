@@ -59,7 +59,7 @@
   
   10. In your cloned (local clone we created in step 0 (with `git clone https://github.com/WattDownload/wp-mini-next-shuttle-axum`), navigate to `wp-mini-shuttle-axum` dir. (So we're now in `/wp-mini-next-shuttle-axum/wp-mini-shuttle-axum` dir), and create a new folder with name `.shuttle` (Don't miss the `.` in the folder name)
   11. In `.shuttle` folder create a new file with name, `config.toml` and edit it with a text editor and put your **shuttle project `Project ID`** (which we noted in step 3) in it following bellow:
-     ```toml
+     ```
      id = "proj_01K51ZM7G4JZZNAXSXT3PJA53E"
      ```
   12. Save it and go back to `/wp-mini-next-shuttle-axum/wp-mini-shuttle-axum` dir.
