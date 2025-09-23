@@ -6,6 +6,7 @@ import {
   Button,
   Column,
   Heading,
+  Icon,
   Input,
   opacity,
   Row,
