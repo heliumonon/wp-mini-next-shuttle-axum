@@ -68,6 +68,7 @@ const home: Home = {
                 </Text>
             </Row>
         ),
+        href: "https://wattpad.com",
     },
     subline: (
         <>Freedom to Read - Guaranteed!</>
