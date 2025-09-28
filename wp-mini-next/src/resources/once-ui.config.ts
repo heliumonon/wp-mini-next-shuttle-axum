@@ -23,8 +23,8 @@ const baseURL: string = "https://1wpdl.netlify.app";
 
 const routes: RoutesConfig = {
     "/": true,
-    "/about": true,
-    "/blog": true,
+    "/about": false,
+    "/blog": false,
     "/checkout": true,
 };
 
