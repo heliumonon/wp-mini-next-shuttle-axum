@@ -65,7 +65,6 @@ export default function Home() {
                         <Button
                             id="about"
                             data-border="rounded"
-                            href={about.path}
                             variant="secondary"
                             size="m"
                             weight="default"
