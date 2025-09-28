@@ -19,7 +19,7 @@ const person: Person = {
     name: "WattDownload",
     role: "Organization",
     avatar: "/images/avatar.jpg",
-    email: "contact@wattdownload.com",
+    email: "contact@heaven.com",
     location: "Asia/Colombo", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
     languages: ["English"], // optional: Leave the array empty if you don&apost want to display languages
 };
@@ -43,11 +43,6 @@ const downloaderStory: Downloader = {
 const social: Social = [
     // Links are automatically displayed.
     // Import new icons in /once-ui/icons.ts
-    {
-        name: "GitHub",
-        icon: "github",
-        link: "https://github.com/WattDownload",
-    },
     {
         name: "Email",
         icon: "email",
@@ -73,7 +68,6 @@ const home: Home = {
                 </Text>
             </Row>
         ),
-        href: "https://github.com/WattDownload",
     },
     subline: (
         <>Freedom to Read - Guaranteed!</>
