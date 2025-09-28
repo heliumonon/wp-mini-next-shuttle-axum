@@ -170,15 +170,17 @@ export const Downloader: React.FC<DownloaderProps> = ({
                     </RevealFx>
                     {requiresLogin && (
                         <Accordion title="Login Credentials">
-                            <Column fillWidth gap="16" paddingTop="m">
+                            <Column fillWidth gap="-1" paddingTop="m">
                                 <Input
                                     id="username-input"
+                                    radius="top"
                                     placeholder="Username or Email"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
                                 <PasswordInput
                                     id="password-input"
+                                    radius="bottom"
                                     placeholder="Enter your password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}

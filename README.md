@@ -81,6 +81,12 @@
 
 ---
 
+## Showcase
+
+https://github.com/user-attachments/assets/0236746f-ee6d-4f66-b81b-fa512cc85707
+
+---
+
 > [!NOTE]
 > `Wattpad` is a registered trademark of `Wattpad` & `Webtoon Entertainment Inc.`. This project is not affiliated with, endorsed, or sponsored by Wattpad.
 

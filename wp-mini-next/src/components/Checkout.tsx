@@ -6,6 +6,7 @@ import {
   Button,
   Column,
   Heading,
+  Icon,
   Input,
   opacity,
   Row,
@@ -139,17 +140,20 @@ export const Checkout: React.FC<React.ComponentProps<typeof Column>> = ({ ...fle
             formNoValidate
             id="mce-INPUT"
             name="INPUT"
-            // MODIFIED: Kept as "text" to avoid number input spinners.
+            // Kept as "text" to avoid number input spinners.
             type="text"
-            // ADDED: These improve mobile UX by showing a numeric keyboard.
+            // These improve mobile UX by showing a numeric keyboard.
             inputMode="numeric"
             pattern="[0-9]*"
             placeholder="Story ID | Story Link"
             required
-            // MODIFIED: Now uses the new single handler and shows the processed storyId.
+            // Now uses the new single handler and shows the processed storyId.
             value={storyId} 
             onChange={handleInputChange}
             onBlur={handleBlur}
+            hasPrefix={
+              <Icon marginLeft="4" onBackground="neutral-weak" name="book" size="xs" />
+            }
             errorMessage={error}
           />
           <div style={{ display: "none" }}>
