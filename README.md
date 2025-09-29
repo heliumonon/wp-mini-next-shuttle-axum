@@ -74,6 +74,9 @@
   15. After succesful deploy, Go back to your netlify project, and in **Project configuration**, select **Continuous deployment** (which's in **Build & deploy** section), and in **Build Setting**, click `Configure` and set **Runtime** to **NextJS**. and Save.
   16. In **Deployments**, Click on **Trigger Deploy** dropdown menu, select **Deploy project without cache** 
   ~~ All Done!
+
+[![Youtube Video](https://github.com/user-attachments/assets/5f98a6d3-ba8c-4aaf-a121-f2619fd1c6f8)](https://youtu.be/Fuhi-x1_ev8)
+
 ---
 
 ## Get Started (Dev)
