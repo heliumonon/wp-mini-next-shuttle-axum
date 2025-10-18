@@ -3119,10 +3119,11 @@ dependencies = [
 
 [[package]]
 name = "wp-mini-axum"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "axum",
+ "percent-encoding",
  "reqwest",
  "serde",
  "serde_json",
