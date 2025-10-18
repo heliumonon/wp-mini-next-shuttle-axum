@@ -4,6 +4,7 @@ use axum::http::{header, Method, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
 use axum::{Json, Router};
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use reqwest::Client;
 use serde::Deserialize;
 use shuttle_runtime::SecretStore;
@@ -124,15 +125,18 @@ async fn generate_epub(
 
     let epub_bytes = epub.epub_response;
 
-    let filename = format!("{}-{}.epub", payload.story_id, epub.sanitized_title);
+    let raw_name = format!("{}.epub", epub.sanitized_title);
+    let encoded_name = utf8_percent_encode(&raw_name, NON_ALPHANUMERIC).to_string();
+
+    let content_disposition = format!(
+        "attachment; filename=\"{}\"; filename*=UTF-8''{}",
+        raw_name, encoded_name
+    );
 
     match Response::builder()
         .status(StatusCode::OK)
         .header(header::CONTENT_TYPE, "application/epub+zip")
-        .header(
-            header::CONTENT_DISPOSITION,
-            format!("attachment; filename=\"{}\"", filename),
-        )
+        .header(header::CONTENT_DISPOSITION, content_disposition)
         .header(header::CONTENT_LENGTH, epub_bytes.len())
         .body(Body::from(epub_bytes))
     {
