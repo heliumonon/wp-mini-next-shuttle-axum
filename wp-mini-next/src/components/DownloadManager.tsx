@@ -59,17 +59,37 @@ export function DownloadManager({ storyId, storyData }: DownloadManagerProps) {
             // The request was successful, now trigger the browser download
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
+
+            // Try to extract filename from the response header (supports UTF-8 encoding)
+            const disposition = response.headers.get('Content-Disposition');
+            let filename: string | null = null;
+
+            if (disposition) {
+              // Try UTF-8 encoded version first
+              const utf8Match = disposition.match(/filename\*\s*=\s*UTF-8''([^;]+)/i);
+              if (utf8Match && utf8Match[1]) {
+                try {
+                  filename = decodeURIComponent(utf8Match[1]);
+                } catch {
+                  filename = utf8Match[1];
+                }
+              } else {
+                // Fallback to simple filename=
+                const match = disposition.match(/filename="?([^"]+)"?/);
+                if (match && match[1]) filename = match[1];
+              }
+            }
+
+            // Default fallback (safe ASCII)
+            if (!filename) filename = `story-${storyId}.epub`;
+
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `${storyData.title}.epub`); // Set the desired filename
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
-            link.parentNode?.removeChild(link);
+            link.remove();
             window.URL.revokeObjectURL(url); // Clean up the object URL
-
-            // Optionally, you can reset the state after a successful download
-            // setTimeout(() => setDownloadState('configuring'), 1000);
-
         } catch (error) {
             console.error("An unexpected error occurred:", error);
             setDownloadState('configuring'); // Reset UI on failure
