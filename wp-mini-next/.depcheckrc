@@ -1,0 +1,10 @@
+{
+  ignoreMatches [
+    react-dom,
+    typescript,
+    @typesreact-dom,
+    eslint,
+    @biomejsbiome,
+    sass
+  ]
+}
