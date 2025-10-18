@@ -1,13 +1,13 @@
-use std::sync::Arc;
-use axum::extract::State;
-use axum::{Json, Router};
 use axum::body::Body;
+use axum::extract::State;
 use axum::http::{header, Method, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
+use axum::{Json, Router};
 use reqwest::Client;
 use serde::Deserialize;
 use shuttle_runtime::SecretStore;
+use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tracing::{info, instrument, warn};
 use wp_mini_epub::{download_story_to_memory, login, AppError};
@@ -31,10 +31,7 @@ struct GenerateEpubRequest {
 struct MyError(AppError);
 
 #[shuttle_runtime::main]
-async fn main(
-    #[shuttle_runtime::Secrets] secret_store: SecretStore,
-) -> shuttle_axum::ShuttleAxum {
-
+async fn main(#[shuttle_runtime::Secrets] secret_store: SecretStore) -> shuttle_axum::ShuttleAxum {
     // Get the frontend origin from secrets for CORS
     let frontend_origin = secret_store
         .get("FRONTEND_ORIGIN")
@@ -53,7 +50,7 @@ async fn main(
             .user_agent(APP_USER_AGENT)
             .cookie_store(true)
             .build()
-            .expect("Failed to create reqwest client")
+            .expect("Failed to create reqwest client"),
     );
 
     let app_state = AppState {
@@ -69,7 +66,6 @@ async fn main(
     // Return the router to Shuttle
     Ok(app.into())
 }
-
 
 // handlers, error mapping, and IntoResponse implementation
 fn map_anyhow_error(e: anyhow::Error) -> AppError {
@@ -95,7 +91,7 @@ async fn generate_epub(
     State(state): State<AppState>,
     Json(payload): Json<GenerateEpubRequest>,
 ) -> Result<Response, MyError> {
-    let epub_bytes_result = match (payload.username, payload.password) {
+    let epub_result = match (payload.username, payload.password) {
         (Some(user), Some(pass)) => {
             info!("Handling authenticated request");
 
@@ -107,8 +103,10 @@ async fn generate_epub(
                 payload.story_id,
                 payload.is_embed_images,
                 CONCURRENT_CHAPTER_REQUESTS,
-            ).await
-        },
+                None,
+            )
+            .await
+        }
         _ => {
             info!("Handling anonymous request");
             download_story_to_memory(
@@ -116,18 +114,25 @@ async fn generate_epub(
                 payload.story_id,
                 payload.is_embed_images,
                 CONCURRENT_CHAPTER_REQUESTS,
-            ).await
+                None,
+            )
+            .await
         }
     };
 
-    let epub_bytes = epub_bytes_result.map_err(map_anyhow_error)?;
+    let epub = epub_result.map_err(map_anyhow_error)?;
 
-    let filename = format!("story_{}.epub", payload.story_id);
+    let epub_bytes = epub.epub_response;
+
+    let filename = format!("{}-{}.epub", payload.story_id, epub.sanitized_title);
 
     match Response::builder()
         .status(StatusCode::OK)
         .header(header::CONTENT_TYPE, "application/epub+zip")
-        .header(header::CONTENT_DISPOSITION, format!("attachment; filename=\"{}\"", filename))
+        .header(
+            header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"{}\"", filename),
+        )
         .header(header::CONTENT_LENGTH, epub_bytes.len())
         .body(Body::from(epub_bytes))
     {
@@ -149,11 +154,18 @@ impl IntoResponse for MyError {
             AppError::AuthenticationFailed => (StatusCode::UNAUTHORIZED, error.to_string()),
             AppError::NotLoggedIn => (StatusCode::UNAUTHORIZED, error.to_string()),
             AppError::LogoutFailed => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
-            AppError::StoryNotFound(id) => (StatusCode::NOT_FOUND, format!("Story with ID {} could not be found", id)),
+            AppError::StoryNotFound(id) => (
+                StatusCode::NOT_FOUND,
+                format!("Story with ID {} could not be found", id),
+            ),
             AppError::MetadataFetchFailed => (StatusCode::BAD_GATEWAY, error.to_string()),
             AppError::DownloadFailed => (StatusCode::BAD_GATEWAY, error.to_string()),
-            AppError::ChapterProcessingFailed => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
-            AppError::EpubGenerationFailed => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
+            AppError::ChapterProcessingFailed => {
+                (StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
+            }
+            AppError::EpubGenerationFailed => {
+                (StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
+            }
             AppError::IoError(_) => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
         };
 
