@@ -25,15 +25,13 @@ interface DownloadManagerProps {
 
 export function DownloadManager({ storyId, storyData }: DownloadManagerProps) {
     const [downloadState, setDownloadState] = useState<'configuring' | 'downloading'>('configuring');
-    // We don't need downloadConfig state anymore
 
-    // This function now needs to be async
     const handleStartDownload = async (config: DownloadConfig) => {
         // Switch the UI to "Downloading" immediately
         setDownloadState('downloading');
 
         try {
-            const response = await fetch('/api/generate-epub', { // Use the new rewrite source path
+            const response = await fetch('/api/generate-epub', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,7 +46,7 @@ export function DownloadManager({ storyId, storyData }: DownloadManagerProps) {
             });
 
             if (!response.ok) {
-                // You can add more robust error handling here, e.g., show a toast notification
+                // Should add more robust error handling here, e.g., show a toast notification
                 const errorData = await response.json();
                 console.error("Failed to download:", errorData.error);
                 setDownloadState('configuring'); // Reset UI on failure

@@ -47,7 +47,7 @@ export const Downloader: React.FC<DownloaderProps> = ({
     ...flex
 }) => {
     // State management for the form controls
-    const [embedImages, setEmbedImages] = useState<boolean>(false);
+    const [embedImages, setEmbedImages] = useState<boolean>(true);
     const [requiresLogin, setRequiresLogin] = useState<boolean>(false);
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
